@@ -20,7 +20,7 @@ public class DialogBuilder {
                 });
         AlertDialog alert = alt_bld.create();
         alert.setTitle(title);
-        alert.setIcon(R.drawable.icon);
+        alert.setIcon(R.mipmap.ic_launcher);
         alert.show();
     }
 
@@ -42,7 +42,7 @@ public class DialogBuilder {
                 });
         AlertDialog alert = alt_bld.create();
         alert.setTitle(title);
-        alert.setIcon(R.drawable.icon);
+        alert.setIcon(R.mipmap.ic_launcher);
         alert.show();
     }
 }
