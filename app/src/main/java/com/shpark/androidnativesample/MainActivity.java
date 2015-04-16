@@ -33,57 +33,64 @@ public class MainActivity extends Activity implements View.OnClickListener,
     private String TAG = "MainActivity";
     private static final int RC_SIGN_IN = 0;
 
-    private SignInButton signInButton_;
-    private Button signOutButton_;
-    private ImageView imageProfilePic_;
-    private TextView textName_, textEmail_;
-    private LinearLayout llProfileLayout_;
-    private Button yesDialogButton_;
-    private Button noYesDialogButton_;
-    private Button systemBarHideButton_;
+    private SignInButton _signInButton;
+    private Button _signOutButton;
+    private ImageView _imageProfilePic;
+    private TextView _textName, _textEmail;
+    private LinearLayout _llProfileLayout;
+    private Button _yesDialogButton;
+    private Button _noYesDialogButton;
+    private Button _systemBarHideButton;
+    private Button _normalNotificationButton;
 
-    private GoogleApiClient googleApiClient_;
-    private boolean intentInProgress_;
-    private boolean signInClicked_;
-    private ConnectionResult connectionResult_;
+    private GoogleApiClient _googleApiClient;
+    private boolean _intentInProgress;
+    private boolean _signInClicked;
+    private ConnectionResult _connectionResult;
 
-    private com.shpark.androidnativesample.DialogBuilder dialogBuilder_;
-    private com.shpark.androidnativesample.SystemBarUtil systemBarUtil_;
+    private DialogBuilder _dialogBuilder;
+    private SystemBarUtil _systemBarUtil;
+    private NotificationBuilder _notificationBuilder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        signInButton_ = (SignInButton)findViewById(R.id.sign_in_button);
-        signInButton_.setOnClickListener(this);
-        signOutButton_ = (Button)findViewById(R.id.button_signOut);
-        signOutButton_.setText("Sign Out");
-        signOutButton_.setVisibility(View.GONE);
-        signOutButton_.setOnClickListener(this);
-        imageProfilePic_ = (ImageView)findViewById(R.id.image_profilePic);
-        textName_ = (TextView)findViewById(R.id.textView_name);
-        textEmail_ = (TextView)findViewById(R.id.textView_email);
-        llProfileLayout_ = (LinearLayout)findViewById(R.id.layout_profile);
-        llProfileLayout_.setVisibility(View.GONE);
+        _signInButton = (SignInButton)findViewById(R.id.sign_in_button);
+        _signInButton.setOnClickListener(this);
+        _signOutButton = (Button)findViewById(R.id.button_signOut);
+        _signOutButton.setText("Sign Out");
+        _signOutButton.setVisibility(View.GONE);
+        _signOutButton.setOnClickListener(this);
+        _imageProfilePic = (ImageView)findViewById(R.id.image_profilePic);
+        _textName = (TextView)findViewById(R.id.textView_name);
+        _textEmail = (TextView)findViewById(R.id.textView_email);
+        _llProfileLayout = (LinearLayout)findViewById(R.id.layout_profile);
+        _llProfileLayout.setVisibility(View.GONE);
 
-        yesDialogButton_ = (Button)findViewById(R.id.button_yesDialog);
-        yesDialogButton_.setText("Yes Dialog");
-        yesDialogButton_.setOnClickListener(this);
+        _yesDialogButton = (Button)findViewById(R.id.button_yesDialog);
+        _yesDialogButton.setText("Yes Dialog");
+        _yesDialogButton.setOnClickListener(this);
 
-        noYesDialogButton_ = (Button)findViewById(R.id.button_noYesDialog);
-        noYesDialogButton_.setText("No Yes Dialog");
-        noYesDialogButton_.setOnClickListener(this);
+        _noYesDialogButton = (Button)findViewById(R.id.button_noYesDialog);
+        _noYesDialogButton.setText("No Yes Dialog");
+        _noYesDialogButton.setOnClickListener(this);
 
-        systemBarHideButton_ = (Button)findViewById(R.id.button_systemBarHide);
-        systemBarHideButton_.setText("System Bar Hide");
-        systemBarHideButton_.setOnClickListener(this);
+        _systemBarHideButton = (Button)findViewById(R.id.button_systemBarHide);
+        _systemBarHideButton.setText("System Bar Hide");
+        _systemBarHideButton.setOnClickListener(this);
 
-        dialogBuilder_ = new com.shpark.androidnativesample.DialogBuilder();
-        systemBarUtil_ = new com.shpark.androidnativesample.SystemBarUtil();
+        _normalNotificationButton = (Button)findViewById(R.id.button_noti_normal);
+        _normalNotificationButton.setText("Normal Notification ");
+        _normalNotificationButton.setOnClickListener(this);
 
-        if (googleApiClient_ == null) {
-            googleApiClient_ = new GoogleApiClient.Builder(this)
+        _dialogBuilder = new DialogBuilder();
+        _systemBarUtil = new SystemBarUtil();
+        _notificationBuilder = new NotificationBuilder();
+
+        if (_googleApiClient == null) {
+            _googleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .addApi(Plus.API)
@@ -96,14 +103,14 @@ public class MainActivity extends Activity implements View.OnClickListener,
     @Override
     protected void onStart() {
         super.onStart();
-        googleApiClient_.connect();
+        _googleApiClient.connect();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (googleApiClient_ != null) {
-            googleApiClient_.disconnect();
+        if (_googleApiClient != null) {
+            _googleApiClient.disconnect();
         }
     }
 
@@ -144,17 +151,22 @@ public class MainActivity extends Activity implements View.OnClickListener,
             }
             case R.id.button_yesDialog:
             {
-                dialogBuilder_.BuildYesDialog(this, "Title", "Message.");
+                _dialogBuilder.BuildYesDialog(this, "Title", "Message.");
                 break;
             }
             case R.id.button_noYesDialog:
             {
-                dialogBuilder_.BuildNoYesDialog(this, "Title", "Message.");
+                _dialogBuilder.BuildNoYesDialog(this, "Title", "Message.");
                 break;
             }
             case R.id.button_systemBarHide:
             {
-                systemBarUtil_.hideSystemBar(this);
+                _systemBarUtil.hideSystemBar(this);
+                break;
+            }
+            case R.id.button_noti_normal:
+            {
+                _notificationBuilder.BuildOldNotification(this);
                 break;
             }
         }
@@ -164,7 +176,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
     public void onConnected(Bundle bundle) {
         Log.i(TAG, "GoogleApiClient connected");
         // TODO: Start making API requests.
-        signInClicked_ = false;
+        _signInClicked = false;
         Toast.makeText(this, "User is connected!", Toast.LENGTH_LONG).show();
         getProfileInformation();
         updateUI(true);
@@ -173,7 +185,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
     @Override
     public void onConnectionSuspended(int i) {
         Log.i(TAG, "GoogleApiClient connection suspended");
-        googleApiClient_.connect();
+        _googleApiClient.connect();
         updateUI(false);
     }
 
@@ -184,10 +196,10 @@ public class MainActivity extends Activity implements View.OnClickListener,
             GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this, 0).show();
         }
 
-        if (!intentInProgress_) {
-            connectionResult_ = result;
+        if (!_intentInProgress) {
+            _connectionResult = result;
 
-            if (signInClicked_) {
+            if (_signInClicked) {
                 resolveSignInError();
             }
         }
@@ -197,74 +209,74 @@ public class MainActivity extends Activity implements View.OnClickListener,
     protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
         if (requestCode == RC_SIGN_IN) {
             if (responseCode != RESULT_OK) {
-                signInClicked_ = false;
+                _signInClicked = false;
             }
 
-            intentInProgress_ = false;
+            _intentInProgress = false;
 
-            if (!googleApiClient_.isConnecting()) {
-                googleApiClient_.connect();
+            if (!_googleApiClient.isConnecting()) {
+                _googleApiClient.connect();
             }
         }
     }
 
     private void updateUI(boolean isSignedIn) {
         if (isSignedIn) {
-            signInButton_.setVisibility(View.GONE);
-            signOutButton_.setVisibility(View.VISIBLE);
-            llProfileLayout_.setVisibility(View.VISIBLE);
+            _signInButton.setVisibility(View.GONE);
+            _signOutButton.setVisibility(View.VISIBLE);
+            _llProfileLayout.setVisibility(View.VISIBLE);
         } else {
-            signInButton_.setVisibility(View.VISIBLE);
-            signOutButton_.setVisibility(View.GONE);
-            llProfileLayout_.setVisibility(View.GONE);
+            _signInButton.setVisibility(View.VISIBLE);
+            _signOutButton.setVisibility(View.GONE);
+            _llProfileLayout.setVisibility(View.GONE);
         }
     }
 
     private void signInWithGplus() {
-        if (!googleApiClient_.isConnecting()) {
-            signInClicked_ = true;
+        if (!_googleApiClient.isConnecting()) {
+            _signInClicked = true;
             resolveSignInError();
         }
     }
 
     private void signOutFromGplus() {
-        if (googleApiClient_.isConnected()) {
-            Plus.AccountApi.clearDefaultAccount(googleApiClient_);
-            googleApiClient_.disconnect();
-            googleApiClient_.connect();
+        if (_googleApiClient.isConnected()) {
+            Plus.AccountApi.clearDefaultAccount(_googleApiClient);
+            _googleApiClient.disconnect();
+            _googleApiClient.connect();
             updateUI(false);
         }
     }
 
     private void resolveSignInError() {
-        if (connectionResult_.hasResolution()) {
+        if (_connectionResult.hasResolution()) {
             try {
-                intentInProgress_ = true;
-                connectionResult_.startResolutionForResult(this, RC_SIGN_IN);
+                _intentInProgress = true;
+                _connectionResult.startResolutionForResult(this, RC_SIGN_IN);
             } catch (IntentSender.SendIntentException e) {
-                intentInProgress_ = false;
-                googleApiClient_.connect();
+                _intentInProgress = false;
+                _googleApiClient.connect();
             }
         }
     }
 
     private void getProfileInformation() {
         try {
-            if (Plus.PeopleApi.getCurrentPerson(googleApiClient_) != null) {
-                Person currentPerson = Plus.PeopleApi.getCurrentPerson(googleApiClient_);
+            if (Plus.PeopleApi.getCurrentPerson(_googleApiClient) != null) {
+                Person currentPerson = Plus.PeopleApi.getCurrentPerson(_googleApiClient);
                 String personName = currentPerson.getDisplayName();
                 String personPhotoUrl = currentPerson.getImage().getUrl();
                 String personGooglePlusProfile = currentPerson.getUrl();
-                String email = Plus.AccountApi.getAccountName(googleApiClient_);
+                String email = Plus.AccountApi.getAccountName(_googleApiClient);
 
                 Log.e(TAG, "Name: " + personName + ", plusProfile: " + personGooglePlusProfile + ", email: " + email + ", Image: " + personPhotoUrl);
 
-                textName_.setText(personName);
-                textEmail_.setText(email);
+                _textName.setText(personName);
+                _textEmail.setText(email);
 
                 personPhotoUrl = personPhotoUrl.substring(0, personPhotoUrl.length() - 2) + 400;
 
-                new LoadProfileImage(imageProfilePic_).execute(personPhotoUrl);
+                new LoadProfileImage(_imageProfilePic).execute(personPhotoUrl);
             } else {
                 Toast.makeText(getApplicationContext(), "Person imformation is null", Toast.LENGTH_LONG).show();
             }
