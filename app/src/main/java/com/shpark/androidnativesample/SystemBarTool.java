@@ -10,64 +10,51 @@ import android.view.View;
 /**
  * Created by sh on 2015-03-06.
  */
-public class SystemBarUtil {
+public class SystemBarTool {
 
-    private String TAG = "SystemBarUtil";
+    private static String TAG = "SystemBarUtil";
 
-    public void hideSystemBar(Activity activity) {
+    public static void HideSystemBar(Activity activity) {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB) {
             Log.d(TAG, "HoneyComb");
         } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             Log.d(TAG, "IceCreamSandwich");
         } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN) {
             Log.d(TAG, "JellyBean");
-            hideSystemBarForJellyBean(activity);
+            HideSystemBarForJellyBean(activity);
         } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             Log.d(TAG, "KitKat");
-            hideSystemBarForKitkat(activity);
+            HideSystemBarForKitkat(activity);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Log.d(TAG, "Lollipop");
-            hideSystemBarForKitkat(activity);
+            HideSystemBarForKitkat(activity);
         }
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
-    private void hideSystemBarForKitkat(Activity activity) {
-		/*Window w = getWindow();
-		w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-		w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);*/
-
-		/*int uiOptions = getWindow().getDecorView().getSystemUiVisibility();
-		uiOptions ^= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
-		uiOptions ^= View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
-		uiOptions ^= View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
-		uiOptions ^= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-		uiOptions ^= View.SYSTEM_UI_FLAG_FULLSCREEN;
-		uiOptions ^= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;*/
+    private static void HideSystemBarForKitkat(Activity activity) {
         View decorView = activity.getWindow().getDecorView();
-        //decorView.setSystemUiVisibility(uiOptions);
-
         decorView.setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
                         | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-                        //| View.SYSTEM_UI_FLAG_IMMERSIVE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        //| View.SYSTEM_UI_FLAG_IMMERSIVE
         );
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private void hideSystemBarForJellyBean(Activity activity) {
+    private static void HideSystemBarForJellyBean(Activity activity) {
         View decorView = activity.getWindow().getDecorView();
         decorView.setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        //| View.SYSTEM_UI_FLAG_LOW_PROFILE
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        //| View.SYSTEM_UI_FLAG_LOW_PROFILE
         );
 
         ActionBar actionBar = activity.getActionBar();

@@ -42,6 +42,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
     private Button _noYesDialogButton;
     private Button _systemBarHideButton;
     private Button _normalNotificationButton;
+    private Button _addShortCutButton;
 
     private GoogleApiClient _googleApiClient;
     private boolean _intentInProgress;
@@ -49,7 +50,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
     private ConnectionResult _connectionResult;
 
     private DialogBuilder _dialogBuilder;
-    private SystemBarUtil _systemBarUtil;
+    //private SystemBarTool _systemBarUtil;
     private NotificationBuilder _notificationBuilder;
 
     @Override
@@ -82,13 +83,18 @@ public class MainActivity extends Activity implements View.OnClickListener,
         _systemBarHideButton.setOnClickListener(this);
 
         _normalNotificationButton = (Button)findViewById(R.id.button_noti_normal);
-        _normalNotificationButton.setText("Normal Notification ");
+        _normalNotificationButton.setText("Normal Notification");
         _normalNotificationButton.setOnClickListener(this);
 
+        _addShortCutButton = (Button)findViewById(R.id.button_add_shortcut);
+        _addShortCutButton.setText("Add ShortCut");
+        _addShortCutButton.setOnClickListener(this);
+
         _dialogBuilder = new DialogBuilder();
-        _systemBarUtil = new SystemBarUtil();
+        //_systemBarUtil = new SystemBarUtil();
         _notificationBuilder = new NotificationBuilder();
 
+        // Google login.
         if (_googleApiClient == null) {
             _googleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
@@ -98,6 +104,14 @@ public class MainActivity extends Activity implements View.OnClickListener,
                             // Optionally, add additional APIs and scopes if required.
                     .build();
         }
+
+        // Create shortcut.
+        if (PreferenceTool.GetPreferenceString(this, "isFirst") == PreferenceTool.DEFAULT_VALUE) {
+            Log.d(TAG, "First execute.");
+            ShortCutTool.AddShortCut(this);
+            PreferenceTool.SavePreferenceString(this, "isFirst", "false");
+        }
+
     }
 
     @Override
@@ -161,12 +175,18 @@ public class MainActivity extends Activity implements View.OnClickListener,
             }
             case R.id.button_systemBarHide:
             {
-                _systemBarUtil.hideSystemBar(this);
+                //_systemBarUtil.hideSystemBar(this);
+                SystemBarTool.HideSystemBar(this);
                 break;
             }
             case R.id.button_noti_normal:
             {
                 _notificationBuilder.BuildOldNotification(this);
+                break;
+            }
+            case R.id.button_add_shortcut:
+            {
+                ShortCutTool.AddShortCut(this);
                 break;
             }
         }
