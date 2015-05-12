@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 /**
  * Created by sh on 2015-05-11.
  */
-public class PreferenceTool {
+public class PreferenceUtil {
 
     private static final String DEFAULT_PREFERENCE_NAME = "pref";
     public static final String DEFAULT_VALUE = "_DEFAULT_";

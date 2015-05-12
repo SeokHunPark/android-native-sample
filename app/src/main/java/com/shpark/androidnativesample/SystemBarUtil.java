@@ -10,7 +10,7 @@ import android.view.View;
 /**
  * Created by sh on 2015-03-06.
  */
-public class SystemBarTool {
+public class SystemBarUtil {
 
     private static String TAG = "SystemBarUtil";
 
@@ -41,10 +41,12 @@ public class SystemBarTool {
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        //| View.SYSTEM_UI_FLAG_LOW_PROFILE
                         //| View.SYSTEM_UI_FLAG_IMMERSIVE
         );
     }
 
+    // Android 4.1 (API level 15).
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private static void HideSystemBarForJellyBean(Activity activity) {
         View decorView = activity.getWindow().getDecorView();
@@ -59,5 +61,29 @@ public class SystemBarTool {
 
         ActionBar actionBar = activity.getActionBar();
         actionBar.hide();
+    }
+
+    // @Test
+    // Android 4.0 (API level 14) and Higher.
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    private static void DimmingSystemBarICSAndHigher(Activity activity) {
+        View decorView = activity.getWindow().getDecorView();
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+    }
+
+    // Android 4.0 (API level 14) and Lower.
+    private static void HideSystemBarICSAndLower(Activity activity) {
+
+    }
+
+    // Android 4.1 (API level 15) and Higher.
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    private static void HideSystemBarJellyBeanAndHigher(Activity activity) {
+        View decorView = activity.getWindow().getDecorView();
+        decorView.setSystemUiVisibility(
+              //  View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+              //| View.SYSTEM_UI_FLAG_FULLSCREEN
+              View.SYSTEM_UI_FLAG_LOW_PROFILE
+        );
     }
 }

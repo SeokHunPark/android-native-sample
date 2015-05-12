@@ -18,7 +18,7 @@ public class NotificationBuilder {
 
     public void BuildOldNotification(Activity mainActivity) {
         NotificationManager notificationManager = (NotificationManager)mainActivity.getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification notification = new Notification(R.drawable.icon, "Normal Notification", System.currentTimeMillis());
+        Notification notification = new Notification(R.drawable.panda, "Normal Notification", System.currentTimeMillis());
         notification.flags = Notification.FLAG_AUTO_CANCEL;
         notification.defaults = Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE;
         notification.number = 13;

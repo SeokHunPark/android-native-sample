@@ -106,10 +106,10 @@ public class MainActivity extends Activity implements View.OnClickListener,
         }
 
         // Create shortcut.
-        if (PreferenceTool.GetPreferenceString(this, "isFirst") == PreferenceTool.DEFAULT_VALUE) {
+        if (PreferenceUtil.GetPreferenceString(this, "isFirst") == PreferenceUtil.DEFAULT_VALUE) {
             Log.d(TAG, "First execute.");
-            ShortCutTool.AddShortCut(this);
-            PreferenceTool.SavePreferenceString(this, "isFirst", "false");
+            ShortCutUtil.AddShortCut(this);
+            PreferenceUtil.SavePreferenceString(this, "isFirst", "false");
         }
 
     }
@@ -176,7 +176,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
             case R.id.button_systemBarHide:
             {
                 //_systemBarUtil.hideSystemBar(this);
-                SystemBarTool.HideSystemBar(this);
+                SystemBarUtil.HideSystemBar(this);
                 break;
             }
             case R.id.button_noti_normal:
@@ -186,7 +186,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
             }
             case R.id.button_add_shortcut:
             {
-                ShortCutTool.AddShortCut(this);
+                ShortCutUtil.AddShortCut(this);
                 break;
             }
         }
@@ -194,7 +194,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
 
     @Override
     public void onConnected(Bundle bundle) {
-        Log.i(TAG, "GoogleApiClient connected");
+        Log.d(TAG, "GoogleApiClient connected");
         // TODO: Start making API requests.
         _signInClicked = false;
         Toast.makeText(this, "User is connected!", Toast.LENGTH_LONG).show();
@@ -204,14 +204,14 @@ public class MainActivity extends Activity implements View.OnClickListener,
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.i(TAG, "GoogleApiClient connection suspended");
+        Log.d(TAG, "GoogleApiClient connection suspended");
         _googleApiClient.connect();
         updateUI(false);
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult result) {
-        Log.i(TAG, "GoogleApiClient connection failed: " + result.toString());
+        Log.d(TAG, "GoogleApiClient connection failed: " + result.toString());
         if (!result.hasResolution()) {
             GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this, 0).show();
         }
@@ -289,7 +289,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
                 String personGooglePlusProfile = currentPerson.getUrl();
                 String email = Plus.AccountApi.getAccountName(_googleApiClient);
 
-                Log.e(TAG, "Name: " + personName + ", plusProfile: " + personGooglePlusProfile + ", email: " + email + ", Image: " + personPhotoUrl);
+                Log.d(TAG, "Name: " + personName + ", plusProfile: " + personGooglePlusProfile + ", email: " + email + ", Image: " + personPhotoUrl);
 
                 _textName.setText(personName);
                 _textEmail.setText(email);
@@ -314,10 +314,10 @@ public class MainActivity extends Activity implements View.OnClickListener,
 
         @Override
         protected Bitmap doInBackground(String... params) {
-            String urldisplay = params[0];
+            String urlDisplay = params[0];
             Bitmap icon11 = null;
             try {
-                InputStream is = new java.net.URL(urldisplay).openStream();
+                InputStream is = new java.net.URL(urlDisplay).openStream();
                 icon11 = BitmapFactory.decodeStream(is);
             } catch (Exception e) {
                 Log.e("Error", e.getMessage());
