@@ -42,6 +42,8 @@ public class MainActivity extends Activity implements View.OnClickListener,
     private Button _noYesDialogButton;
     private Button _systemBarHideButton;
     private Button _normalNotificationButton;
+    private Button _bigPictureNotificationButton;
+    private Button _bigTextNotificationButton;
     private Button _addShortCutButton;
 
     private GoogleApiClient _googleApiClient;
@@ -85,6 +87,14 @@ public class MainActivity extends Activity implements View.OnClickListener,
         _normalNotificationButton = (Button)findViewById(R.id.button_noti_normal);
         _normalNotificationButton.setText("Normal Notification");
         _normalNotificationButton.setOnClickListener(this);
+
+        _bigPictureNotificationButton = (Button)findViewById(R.id.button_noti_bicpicture);
+        _bigPictureNotificationButton.setText("Bigpicture Notification");
+        _bigPictureNotificationButton.setOnClickListener(this);
+
+        _bigTextNotificationButton = (Button)findViewById(R.id.button_noti_bictext);
+        _bigTextNotificationButton.setText("Bigtext Notification");
+        _bigTextNotificationButton.setOnClickListener(this);
 
         _addShortCutButton = (Button)findViewById(R.id.button_add_shortcut);
         _addShortCutButton.setText("Add ShortCut");
@@ -175,13 +185,18 @@ public class MainActivity extends Activity implements View.OnClickListener,
             }
             case R.id.button_systemBarHide:
             {
-                //_systemBarUtil.hideSystemBar(this);
                 SystemBarUtil.HideSystemBar(this);
                 break;
             }
             case R.id.button_noti_normal:
             {
-                _notificationBuilder.BuildOldNotification(this);
+                //_notificationBuilder.BuildOldNotification(this, "Ticker text", "Title", "Message");
+                _notificationBuilder.BuildNotification(this, "Ticker text", "Title", "Message");
+                break;
+            }
+            case R.id.button_noti_bicpicture:
+            {
+                _notificationBuilder.BuildPicpictureNotification(this, "Ticker text", "Title", "Message");
                 break;
             }
             case R.id.button_add_shortcut:
