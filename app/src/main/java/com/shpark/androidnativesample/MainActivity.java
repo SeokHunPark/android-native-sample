@@ -45,6 +45,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
     private Button _bigPictureNotificationButton;
     private Button _bigTextNotificationButton;
     private Button _addShortCutButton;
+    private Button _checkRootingButton;
 
     private GoogleApiClient _googleApiClient;
     private boolean _intentInProgress;
@@ -53,7 +54,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
 
     private DialogBuilder _dialogBuilder;
     //private SystemBarTool _systemBarUtil;
-    private NotificationBuilder _notificationBuilder;
+    private NotificationUtil _notificationUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,11 +89,11 @@ public class MainActivity extends Activity implements View.OnClickListener,
         _normalNotificationButton.setText("Normal Notification");
         _normalNotificationButton.setOnClickListener(this);
 
-        _bigPictureNotificationButton = (Button)findViewById(R.id.button_noti_bicpicture);
+        _bigPictureNotificationButton = (Button)findViewById(R.id.button_noti_bigpicture);
         _bigPictureNotificationButton.setText("Bigpicture Notification");
         _bigPictureNotificationButton.setOnClickListener(this);
 
-        _bigTextNotificationButton = (Button)findViewById(R.id.button_noti_bictext);
+        _bigTextNotificationButton = (Button)findViewById(R.id.button_noti_bigtext);
         _bigTextNotificationButton.setText("Bigtext Notification");
         _bigTextNotificationButton.setOnClickListener(this);
 
@@ -100,9 +101,13 @@ public class MainActivity extends Activity implements View.OnClickListener,
         _addShortCutButton.setText("Add ShortCut");
         _addShortCutButton.setOnClickListener(this);
 
+        _checkRootingButton = (Button)findViewById(R.id.button_check_rooting);
+        _checkRootingButton.setText("Check Rooting");
+        _checkRootingButton.setOnClickListener(this);
+
         _dialogBuilder = new DialogBuilder();
         //_systemBarUtil = new SystemBarUtil();
-        _notificationBuilder = new NotificationBuilder();
+        _notificationUtil = new NotificationUtil();
 
         // Google login.
         if (_googleApiClient == null) {
@@ -190,19 +195,36 @@ public class MainActivity extends Activity implements View.OnClickListener,
             }
             case R.id.button_noti_normal:
             {
-                //_notificationBuilder.BuildOldNotification(this, "Ticker text", "Title", "Message");
-                _notificationBuilder.BuildNotification(this, "Ticker text", "Title", "Message");
+                //_notificationUtil.BuildOldNotification(this, "Ticker text", "Title", "Message");
+                _notificationUtil.BuildNotification(this, 0, "Ticker text", "Title", "Message");
                 break;
             }
-            case R.id.button_noti_bicpicture:
+            case R.id.button_noti_bigpicture:
             {
-                _notificationBuilder.BuildPicpictureNotification(this, "Ticker text", "Title", "Message");
+                _notificationUtil.BuildPicpictureNotification(this, 0, "Ticker text", "Title", "Message", "BigPicture Expanded Title", "BigPicture expanded message");
+                break;
+            }
+            case R.id.button_noti_bigtext:
+            {
+                _notificationUtil.BuildBigTextNotification(this, 0, "Ticker text", "Title", "Message", "BigText Expanded Title",
+                        "A long time ago, in a galaxy far,\n" +
+                                "far away....\n" +
+                                "\n" +
+                                "It is a period of civil war.\n" +
+                                "Rebel spaceships, striking\n" +
+                                "from a hidden base, have won\n" +
+                                "their first victory against\n" +
+                                "the evil Galactic Empire.");
                 break;
             }
             case R.id.button_add_shortcut:
             {
                 ShortCutUtil.AddShortCut(this);
                 break;
+            }
+            case R.id.button_check_rooting:
+            {
+                HackDetectUtil.CheckRooting(this);
             }
         }
     }
