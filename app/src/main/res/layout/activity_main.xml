@@ -99,4 +99,9 @@
         android:layout_height="wrap_content"
         android:id="@+id/button_check_rooting" />
 
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_check_networkstate" />
+
 </LinearLayout>

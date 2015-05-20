@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Network;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -46,6 +47,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
     private Button _bigTextNotificationButton;
     private Button _addShortCutButton;
     private Button _checkRootingButton;
+    private Button _checkNetworkStateButton;
 
     private GoogleApiClient _googleApiClient;
     private boolean _intentInProgress;
@@ -104,6 +106,10 @@ public class MainActivity extends Activity implements View.OnClickListener,
         _checkRootingButton = (Button)findViewById(R.id.button_check_rooting);
         _checkRootingButton.setText("Check Rooting");
         _checkRootingButton.setOnClickListener(this);
+
+        _checkNetworkStateButton = (Button)findViewById(R.id.button_check_networkstate);
+        _checkNetworkStateButton.setText("Check Network State");
+        _checkNetworkStateButton.setOnClickListener(this);
 
         _dialogBuilder = new DialogBuilder();
         //_systemBarUtil = new SystemBarUtil();
@@ -225,6 +231,10 @@ public class MainActivity extends Activity implements View.OnClickListener,
             case R.id.button_check_rooting:
             {
                 HackDetectUtil.CheckRooting(this);
+            }
+            case R.id.button_check_networkstate:
+            {
+                NetworkStateUtil.CheckNetworkState(this);
             }
         }
     }
