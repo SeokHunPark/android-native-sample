@@ -31,8 +31,9 @@ public class MainActivity extends Activity implements View.OnClickListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
-    private String TAG = "MainActivity";
+    private final String TAG = "MainActivity";
     private static final int RC_SIGN_IN = 0;
+    private int _notificationIndex;
 
     private SignInButton _signInButton;
     private Button _signOutButton;
@@ -133,6 +134,8 @@ public class MainActivity extends Activity implements View.OnClickListener,
             PreferenceUtil.SavePreferenceString(this, "isFirst", "false");
         }
 
+        _notificationIndex = 0;
+
     }
 
     @Override
@@ -202,17 +205,19 @@ public class MainActivity extends Activity implements View.OnClickListener,
             case R.id.button_noti_normal:
             {
                 //_notificationUtil.BuildOldNotification(this, "Ticker text", "Title", "Message");
-                _notificationUtil.BuildNotification(this, 0, "Ticker text", "Title", "Message");
+                _notificationUtil.BuildNotification(this, _notificationIndex, "Normal ticker text", "Normal title", "Normal message");
+                _notificationIndex++;
                 break;
             }
             case R.id.button_noti_bigpicture:
             {
-                _notificationUtil.BuildPicpictureNotification(this, 0, "Ticker text", "Title", "Message", "BigPicture Expanded Title", "BigPicture expanded message");
+                _notificationUtil.BuildPicpictureNotification(this, _notificationIndex, "Bigpicture ticker text", "Bigpicture title", "Bigpicture message", "Bigpicture Expanded Title", "Bigpicture expanded message");
+                _notificationIndex++;
                 break;
             }
             case R.id.button_noti_bigtext:
             {
-                _notificationUtil.BuildBigTextNotification(this, 0, "Ticker text", "Title", "Message", "BigText Expanded Title",
+                _notificationUtil.BuildBigTextNotification(this, 0, "Bigtext ticker text", "Bigtext title", "Bigtext message", "Bigtext Expanded Title",
                         "A long time ago, in a galaxy far,\n" +
                                 "far away....\n" +
                                 "\n" +
@@ -221,6 +226,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
                                 "from a hidden base, have won\n" +
                                 "their first victory against\n" +
                                 "the evil Galactic Empire.");
+                _notificationIndex++;
                 break;
             }
             case R.id.button_add_shortcut:

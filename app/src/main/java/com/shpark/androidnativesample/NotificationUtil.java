@@ -48,9 +48,12 @@ public class NotificationUtil {
 
     private Notification.Builder CreateBuilder(Activity activity,int id,  String ticker, String title, String message) {
         PendingIntent pendingIntent = PendingIntent.getActivity(activity, 0, new Intent(activity, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+        Bitmap largeIcon = BitmapFactory.decodeResource(activity.getResources(), R.mipmap.ic_launcher);
         Notification.Builder builder = new Notification.Builder(activity);
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        //    builder.setVisibility(Notification.VISIBILITY_PRIVATE);
         builder.setSmallIcon(R.drawable.panda);
-        //builder.setSmallIcon(R.mipmap.ic_launcher);
+        builder.setLargeIcon(largeIcon);
         builder.setTicker(ticker);
         builder.setWhen(System.currentTimeMillis());
         builder.setNumber(1);
@@ -59,7 +62,7 @@ public class NotificationUtil {
         builder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
         builder.setContentIntent(pendingIntent);
         builder.setAutoCancel(true);
-        builder.setPriority(NotificationCompat.PRIORITY_MAX);
+        builder.setPriority(Notification.PRIORITY_DEFAULT);
 
         return builder;
     }
