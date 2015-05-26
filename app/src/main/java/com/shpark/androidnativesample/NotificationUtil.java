@@ -46,9 +46,12 @@ public class NotificationUtil {
         notificationManager.notify(id, builder.build());
     }
 
-    private Notification.Builder CreateBuilder(Activity activity,int id,  String ticker, String title, String message) {
-        PendingIntent pendingIntent = PendingIntent.getActivity(activity, 0, new Intent(activity, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
-        Bitmap largeIcon = BitmapFactory.decodeResource(activity.getResources(), R.mipmap.ic_launcher);
+    private Notification.Builder CreateBuilder(Activity activity, int id,  String ticker, String title, String message) {
+        PendingIntent pendingIntent = PendingIntent.getActivity(activity, id, new Intent(activity, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+        //Bitmap largeIcon = BitmapFactory.decodeResource(activity.getResources(), R.mipmap.ic_launcher);
+        // 라이브러리나 플러그인 형태로 빌드될 때 R.java에 직접 접근할 수 없을 경우
+        int iconValue = activity.getResources().getIdentifier("ic_launcher", "mipmap", activity.getPackageName());
+        Bitmap largeIcon = BitmapFactory.decodeResource(activity.getResources(), iconValue);
         Notification.Builder builder = new Notification.Builder(activity);
         //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
         //    builder.setVisibility(Notification.VISIBILITY_PRIVATE);

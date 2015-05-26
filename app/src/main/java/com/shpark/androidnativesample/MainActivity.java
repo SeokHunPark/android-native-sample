@@ -217,7 +217,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
             }
             case R.id.button_noti_bigtext:
             {
-                _notificationUtil.BuildBigTextNotification(this, 0, "Bigtext ticker text", "Bigtext title", "Bigtext message", "Bigtext Expanded Title",
+                _notificationUtil.BuildBigTextNotification(this, _notificationIndex, "Bigtext ticker text", "Bigtext title", "Bigtext message", "Bigtext Expanded Title",
                         "A long time ago, in a galaxy far,\n" +
                                 "far away....\n" +
                                 "\n" +
