@@ -1,20 +1,27 @@
 package com.shpark.androidnativesample;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Network;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,9 +29,12 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.iid.InstanceID;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 public class MainActivity extends Activity implements View.OnClickListener,
@@ -33,6 +43,15 @@ public class MainActivity extends Activity implements View.OnClickListener,
 
     private final String TAG = "MainActivity";
     private static final int RC_SIGN_IN = 0;
+
+    public static final String PROPERTY_REG_ID = "registration_id";
+    private static final String PROPERTY_APP_VERSION = "appVersion";
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private String SENDER_ID = "452415134877";
+    private GoogleCloudMessaging _gcm;
+    private String _regid;
+
+    private boolean _isNotificationOn;
     private int _notificationIndex;
 
     private SignInButton _signInButton;
@@ -43,6 +62,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
     private Button _yesDialogButton;
     private Button _noYesDialogButton;
     private Button _systemBarHideButton;
+    private Switch _notificationOnOffSwitch;
     private Button _normalNotificationButton;
     private Button _bigPictureNotificationButton;
     private Button _bigTextNotificationButton;
@@ -55,8 +75,6 @@ public class MainActivity extends Activity implements View.OnClickListener,
     private boolean _signInClicked;
     private ConnectionResult _connectionResult;
 
-    private DialogBuilder _dialogBuilder;
-    //private SystemBarTool _systemBarUtil;
     private NotificationUtil _notificationUtil;
 
     @Override
@@ -88,6 +106,30 @@ public class MainActivity extends Activity implements View.OnClickListener,
         _systemBarHideButton.setText("System Bar Hide");
         _systemBarHideButton.setOnClickListener(this);
 
+        _notificationOnOffSwitch = (Switch)findViewById(R.id.switch_noti_onoff);
+        _notificationOnOffSwitch.setChecked(true);
+        _notificationOnOffSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if(isChecked){
+                    Log.d(TAG, "Is checked");
+                    _isNotificationOn = true;
+                    if (checkPlayServices()) {
+                        Log.i(TAG, "Check device for Play Services API");
+                        getGcmTokenInBackground(getApplicationContext());
+                    } else {
+                        Log.i(TAG, "No valid Google Play Services APK found.");
+                    }
+                }else{
+                    Log.d(TAG, "Is not checked");
+                    _isNotificationOn = false;
+                    deleteGcmTokeInBackground(getApplicationContext());
+                }
+            }
+        });
+
         _normalNotificationButton = (Button)findViewById(R.id.button_noti_normal);
         _normalNotificationButton.setText("Normal Notification");
         _normalNotificationButton.setOnClickListener(this);
@@ -112,8 +154,6 @@ public class MainActivity extends Activity implements View.OnClickListener,
         _checkNetworkStateButton.setText("Check Network State");
         _checkNetworkStateButton.setOnClickListener(this);
 
-        _dialogBuilder = new DialogBuilder();
-        //_systemBarUtil = new SystemBarUtil();
         _notificationUtil = new NotificationUtil();
 
         // Google login.
@@ -136,6 +176,46 @@ public class MainActivity extends Activity implements View.OnClickListener,
 
         _notificationIndex = 0;
 
+        // GCM
+        // Check device for Play Services APK.
+        if (checkPlayServices()) {
+            // Start IntentService to register this application with GCM.
+            //Intent intent = new Intent(this, RegistrationIntentService.class);
+            //startService(intent);
+        }
+
+        /*if (checkPlayServices()) {
+            // If this check succeeds, proceed with normal processing.
+            // Otherwise, prompt user to get valid Play Services APK.
+            Log.i(TAG, "Check device for Play Services API");
+
+            // Old version.
+            //_gcm = GoogleCloudMessaging.getInstance(this);
+            _regid = getStoredRegistrationId(getApplicationContext());
+
+            //if (regid.isEmpty()) {
+            if (_regid.equals("")) {
+                getGcmTokenInBackground(getApplicationContext());
+            } else {
+                Log.d(TAG, "Registered regid = " + _regid);
+            }
+        } else {
+            Log.i(TAG, "No valid Google Play Services APK found.");
+        }*/
+
+        // Keep the screen on.
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        Window w = getWindow();
+        WindowManager.LayoutParams lp = w.getAttributes();
+        lp.buttonBrightness = (float)100/100;
+        w.setAttributes(lp);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkPlayServices();
     }
 
     @Override
@@ -189,12 +269,12 @@ public class MainActivity extends Activity implements View.OnClickListener,
             }
             case R.id.button_yesDialog:
             {
-                _dialogBuilder.BuildYesDialog(this, "Title", "Message.");
+                DialogUtil.BuildYesDialog(this, "Title", "Message.");
                 break;
             }
             case R.id.button_noYesDialog:
             {
-                _dialogBuilder.BuildNoYesDialog(this, "Title", "Message.");
+                DialogUtil.BuildNoYesDialog(this, "Title", "Message.");
                 break;
             }
             case R.id.button_systemBarHide:
@@ -358,6 +438,134 @@ public class MainActivity extends Activity implements View.OnClickListener,
         }
     }
 
+    // GCM
+    private String getStoredRegistrationId(Context context) {
+
+        final SharedPreferences prefs = getGCMPreferences(context);
+        String registrationId = prefs.getString(PROPERTY_REG_ID, "");
+        //if (registrationId.isEmpty()) {
+        if (registrationId.equals("")) {
+            Log.i(TAG, "Registration not found.");
+            return "";
+        }
+        // Check if app was updated; if so, it must clear the registration ID
+        // since the existing regID is not guaranteed to work with the new
+        // app version.
+        int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
+        int currentVersion = getAppVersion(context);
+        if (registeredVersion != currentVersion) {
+            Log.i(TAG, "App version changed.");
+            return "";
+        }
+        return registrationId;
+    }
+
+    private SharedPreferences getGCMPreferences(Context context) {
+        // This sample app persists the registration ID in shared preferences, but
+        // how you store the regID in your app is up to you.
+        return getSharedPreferences(MainActivity.class.getSimpleName(), Context.MODE_PRIVATE);
+    }
+
+    private static int getAppVersion(Context context) {
+        try {
+            PackageInfo packageInfo = context.getPackageManager()
+                    .getPackageInfo(context.getPackageName(), 0);
+            return packageInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            // should never happen
+            throw new RuntimeException("Could not get package name: " + e);
+        }
+    }
+
+    private void getGcmTokenInBackground(final Context context) {
+        Log.d(TAG, "Register in background.");
+        new AsyncTask<Object, Object, Object>() {
+            @Override
+            protected Object doInBackground(Object... params) {
+                String msg = "";
+                try {
+                    _regid = InstanceID.getInstance(context).getToken(SENDER_ID, GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
+                    /*String token = instanceID.getToken(getString(R.string.gcm_senderId), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
+                    Log.i(TAG, "GCM Registration Token: " + token);*/
+
+                    // Old version.
+                    /*if (_gcm == null) {
+                        _gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
+                    }
+                    _regid = _gcm.register(SENDER_ID);*/
+
+                    msg = "Device registered, registration ID = " + _regid;
+                    Log.d(TAG, msg);
+
+                    // You should send the registration ID to your server over HTTP,
+                    // so it can use GCM/HTTP or CCS to send messages to your app.
+                    // The request to your server should be authenticated if your app
+                    // is using accounts.
+                    sendRegistrationIdToBackend();
+
+                    // For this demo: we don't need to send it because the device
+                    // will send upstream messages to a server that echo back the
+                    // message using the 'from' address in the message.
+
+                    // Persist the regID - no need to register again.
+                    storeRegistrationId(getApplicationContext(), _regid);
+                } catch (IOException ex) {
+                    msg = "Error :" + ex.getMessage();
+                    // If there is an error, don't just keep trying to register.
+                    // Require the user to click a button again, or perform
+                    // exponential back-off.
+                }
+                return msg;
+            }
+        }.execute(null, null, null);
+    }
+
+    private void sendRegistrationIdToBackend() {
+        // Your implementation here.
+
+    }
+
+    private void storeRegistrationId(Context context, String regId) {
+        final SharedPreferences prefs = getGCMPreferences(context);
+        int appVersion = getAppVersion(context);
+        Log.i(TAG, "Saving regId on app version " + appVersion);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(PROPERTY_REG_ID, regId);
+        editor.putInt(PROPERTY_APP_VERSION, appVersion);
+        editor.commit();
+    }
+
+    public void deleteGcmTokeInBackground(final Context context) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    InstanceID.getInstance(context).deleteToken(SENDER_ID, GoogleCloudMessaging.INSTANCE_ID_SCOPE);
+                    Log.d(TAG, "delete token succeeded." + "\nsenderId: " + SENDER_ID);
+                } catch (final IOException e) {
+                    Log.d(TAG, "remove token failed." + "\nsenderId: " + SENDER_ID + "\nerror: " + e.getMessage());
+                }
+                return null;
+            }
+        }.execute();
+    }
+
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    // Image download.
     private class LoadProfileImage extends AsyncTask<String, Void, Bitmap> {
         ImageView bitmapImage;
 
