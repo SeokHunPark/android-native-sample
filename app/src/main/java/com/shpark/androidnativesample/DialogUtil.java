@@ -7,9 +7,9 @@ import android.content.DialogInterface;
 /**
  * Created by sh on 2015-03-04.
  */
-public class DialogBuilder {
+public class DialogUtil {
 
-    public void BuildYesDialog(Context context, String title, String message) {
+    public static void BuildYesDialog(Context context, String title, String message) {
         AlertDialog.Builder alt_bld = new AlertDialog.Builder(context);
         alt_bld.setMessage(message).setCancelable(false).setPositiveButton(
                 "확인",
@@ -24,7 +24,7 @@ public class DialogBuilder {
         alert.show();
     }
 
-    public void BuildNoYesDialog(Context context, String title, String message) {
+    public static void BuildNoYesDialog(Context context, String title, String message) {
         AlertDialog.Builder alt_bld = new AlertDialog.Builder(context);
         alt_bld.setMessage(message).setCancelable(false).setPositiveButton(
                 "확인",

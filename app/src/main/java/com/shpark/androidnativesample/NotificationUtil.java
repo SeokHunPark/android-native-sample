@@ -32,7 +32,7 @@ public class NotificationUtil {
         BIGTEXT
     }
 
-    public void BuildExpandedNotification(Activity activity, int id, String ticker, String title, String message, String expandedTitle, String expandedMessage) {
+    public void BuildExpandedNotification(Context context, int id, String ticker, String title, String message, String expandedTitle, String expandedMessage) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             Log.d(TAG, "JellyBean and higher.");
             //BuildNotification(activity, id, ticker, title, message);
@@ -40,19 +40,19 @@ public class NotificationUtil {
             Log.d(TAG, "IceCreamSandwich and lower.");
             //BuildNotificationCompat(activity, id, ticker, title, message);
         }
-        NotificationManager notificationManager = (NotificationManager)activity.getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification.Builder builder = CreateBuilder(activity, id, ticker, title, message);
+        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification.Builder builder = CreateBuilder(context, id, ticker, title, message);
 
         notificationManager.notify(id, builder.build());
     }
 
-    private Notification.Builder CreateBuilder(Activity activity, int id,  String ticker, String title, String message) {
-        PendingIntent pendingIntent = PendingIntent.getActivity(activity, id, new Intent(activity, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+    private Notification.Builder CreateBuilder(Context context, int id,  String ticker, String title, String message) {
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
         //Bitmap largeIcon = BitmapFactory.decodeResource(activity.getResources(), R.mipmap.ic_launcher);
         // 라이브러리나 플러그인 형태로 빌드될 때 R.java에 직접 접근할 수 없을 경우
-        int iconValue = activity.getResources().getIdentifier("ic_launcher", "mipmap", activity.getPackageName());
-        Bitmap largeIcon = BitmapFactory.decodeResource(activity.getResources(), iconValue);
-        Notification.Builder builder = new Notification.Builder(activity);
+        int iconValue = context.getResources().getIdentifier("ic_launcher", "mipmap", context.getPackageName());
+        Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), iconValue);
+        Notification.Builder builder = new Notification.Builder(context);
         //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
         //    builder.setVisibility(Notification.VISIBILITY_PRIVATE);
         builder.setSmallIcon(R.drawable.panda);
@@ -76,31 +76,31 @@ public class NotificationUtil {
         return style;
     }
 
-    public void BuildOldNotification(Activity activity,int id,  String ticker, String title, String message) {
-        NotificationManager notificationManager = (NotificationManager)activity.getSystemService(Context.NOTIFICATION_SERVICE);
+    public void BuildOldNotification(Context context, int id,  String ticker, String title, String message) {
+        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         Notification notification = new Notification(R.drawable.panda, ticker, System.currentTimeMillis());
         notification.flags = Notification.FLAG_AUTO_CANCEL;
         notification.defaults = Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE;
         //notification.number = 1; // 미확인 알람 개수
-        PendingIntent pendingIntent = PendingIntent.getActivity(activity, 0, new Intent(activity, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
-        notification.setLatestEventInfo(activity, title, message, pendingIntent);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+        notification.setLatestEventInfo(context, title, message, pendingIntent);
         notificationManager.notify(id, notification);
     }
 
     // Android 4.2 (API level 16) and higher.
-    public void BuildNotification(Activity activity, int id, String ticker, String title, String message) {
-        NotificationManager notificationManager = (NotificationManager)activity.getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification.Builder builder = CreateBuilder(activity, id, ticker, title, message);
+    public void BuildNotification(Context context, int id, String ticker, String title, String message) {
+        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification.Builder builder = CreateBuilder(context, id, ticker, title, message);
 
         notificationManager.notify(id, builder.build());
     }
 
     // Android 4.1 (API level 15) and Lower.
-    public void BuildNotificationCompat(Activity activity, int id, String ticker, String title, String message) {
-        NotificationManager notificationManager = (NotificationManager)activity.getSystemService(Context.NOTIFICATION_SERVICE);
+    public void BuildNotificationCompat(Context context, int id, String ticker, String title, String message) {
+        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(activity, 0, new Intent(activity, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationCompat.Builder compatBuilder = new NotificationCompat.Builder(activity);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Builder compatBuilder = new NotificationCompat.Builder(context);
         compatBuilder.setSmallIcon(R.drawable.panda);
         //compatBuilder.setSmallIcon(R.mipmap.ic_launcher);
         compatBuilder.setTicker(ticker);
@@ -116,11 +116,11 @@ public class NotificationUtil {
         notificationManager.notify(id, compatBuilder.build());
     }
 
-    public void BuildPicpictureNotification(Activity activity, int id, String ticker, String title, String message, String expandedTitle, String expandedMessage) {
-        NotificationManager notificationManager = (NotificationManager)activity.getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification.Builder builder = CreateBuilder(activity, id, ticker, title, message);
+    public void BuildPicpictureNotification(Context context, int id, String ticker, String title, String message, String expandedTitle, String expandedMessage) {
+        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification.Builder builder = CreateBuilder(context, id, ticker, title, message);
 
-        Bitmap bigPicture = BitmapFactory.decodeResource(activity.getResources(), R.drawable.panda);
+        Bitmap bigPicture = BitmapFactory.decodeResource(context.getResources(), R.drawable.panda);
 
         Notification.BigPictureStyle bigPictureStyle = new Notification.BigPictureStyle(builder);
         bigPictureStyle.setBigContentTitle(expandedTitle);
@@ -131,12 +131,12 @@ public class NotificationUtil {
         notificationManager.notify(id, builder.build());
     }
 
-    public void BuildUrlBigPictureNotification(Activity activity, int id, String ticker, String title, String message, String expandedTitle, String expandedMessage, String imageUrl) {
-        NotificationManager notificationManager = (NotificationManager)activity.getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification.Builder builder = CreateBuilder(activity, id, ticker, title, message);
+    public void BuildUrlBigPictureNotification(Context context, int id, String ticker, String title, String message, String expandedTitle, String expandedMessage, String imageUrl) {
+        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification.Builder builder = CreateBuilder(context, id, ticker, title, message);
 
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(activity.getApplicationContext())
-                .imageDownloader(new BaseImageDownloader(activity, 5 * 1000, 10 * 1000))
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context.getApplicationContext())
+                .imageDownloader(new BaseImageDownloader(context, 5 * 1000, 10 * 1000))
                 .build();
 
         ImageLoader.getInstance().init(config);
@@ -164,9 +164,9 @@ public class NotificationUtil {
         notificationManager.notify(id, builder.build());
     }
 
-    public void BuildBigTextNotification(Activity activity, int id, String ticker, String title, String message, String expandedTitle, String expandedMessage) {
-        NotificationManager notificationManager = (NotificationManager)activity.getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification.Builder builder = CreateBuilder(activity, id, ticker, title, message);
+    public void BuildBigTextNotification(Context context, int id, String ticker, String title, String message, String expandedTitle, String expandedMessage) {
+        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification.Builder builder = CreateBuilder(context, id, ticker, title, message);
 
         Notification.BigTextStyle bigTextStyle = new Notification.BigTextStyle(builder);
         bigTextStyle.setSummaryText("and More +");

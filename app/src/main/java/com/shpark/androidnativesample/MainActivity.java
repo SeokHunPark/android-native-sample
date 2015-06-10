@@ -184,7 +184,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
             //startService(intent);
         }
 
-        /*if (checkPlayServices()) {
+        if (checkPlayServices()) {
             // If this check succeeds, proceed with normal processing.
             // Otherwise, prompt user to get valid Play Services APK.
             Log.i(TAG, "Check device for Play Services API");
@@ -201,15 +201,10 @@ public class MainActivity extends Activity implements View.OnClickListener,
             }
         } else {
             Log.i(TAG, "No valid Google Play Services APK found.");
-        }*/
+        }
 
         // Keep the screen on.
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        Window w = getWindow();
-        WindowManager.LayoutParams lp = w.getAttributes();
-        lp.buttonBrightness = (float)100/100;
-        w.setAttributes(lp);
     }
 
     @Override
