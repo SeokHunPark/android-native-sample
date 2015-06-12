@@ -60,7 +60,7 @@ public class GcmIntentService extends IntentService {
                 //sendNotification(extras);
                 Log.i(TAG, "Received: " + extras.toString());
 
-                NotificationUtil notificationUtil = new NotificationUtil();
+                NotificationHelper notificationUtil = new NotificationHelper();
                 notificationUtil.BuildNotification(this, 0, "GCM test push", "GCM test", "GCM test message");
             }
         }

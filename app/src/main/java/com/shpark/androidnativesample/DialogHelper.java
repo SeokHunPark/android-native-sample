@@ -7,7 +7,7 @@ import android.content.DialogInterface;
 /**
  * Created by sh on 2015-03-04.
  */
-public class DialogUtil {
+public class DialogHelper {
 
     public static void BuildYesDialog(Context context, String title, String message) {
         AlertDialog.Builder alt_bld = new AlertDialog.Builder(context);

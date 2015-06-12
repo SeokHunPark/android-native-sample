@@ -75,7 +75,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
     private boolean _signInClicked;
     private ConnectionResult _connectionResult;
 
-    private NotificationUtil _notificationUtil;
+    private NotificationHelper _notificationHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,7 +154,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
         _checkNetworkStateButton.setText("Check Network State");
         _checkNetworkStateButton.setOnClickListener(this);
 
-        _notificationUtil = new NotificationUtil();
+        _notificationHelper = new NotificationHelper();
 
         // Google login.
         if (_googleApiClient == null) {
@@ -168,10 +168,10 @@ public class MainActivity extends Activity implements View.OnClickListener,
         }
 
         // Create shortcut.
-        if (PreferenceUtil.GetPreferenceString(this, "isFirst") == PreferenceUtil.DEFAULT_VALUE) {
+        if (PreferenceHelper.GetPreferenceString(this, "isFirst") == PreferenceHelper.DEFAULT_VALUE) {
             Log.d(TAG, "First execute.");
             ShortCutUtil.AddShortCut(this);
-            PreferenceUtil.SavePreferenceString(this, "isFirst", "false");
+            PreferenceHelper.SavePreferenceString(this, "isFirst", "false");
         }
 
         _notificationIndex = 0;
@@ -264,12 +264,12 @@ public class MainActivity extends Activity implements View.OnClickListener,
             }
             case R.id.button_yesDialog:
             {
-                DialogUtil.BuildYesDialog(this, "Title", "Message.");
+                DialogHelper.BuildYesDialog(this, "Title", "Message.");
                 break;
             }
             case R.id.button_noYesDialog:
             {
-                DialogUtil.BuildNoYesDialog(this, "Title", "Message.");
+                DialogHelper.BuildNoYesDialog(this, "Title", "Message.");
                 break;
             }
             case R.id.button_systemBarHide:
@@ -280,19 +280,19 @@ public class MainActivity extends Activity implements View.OnClickListener,
             case R.id.button_noti_normal:
             {
                 //_notificationUtil.BuildOldNotification(this, "Ticker text", "Title", "Message");
-                _notificationUtil.BuildNotification(this, _notificationIndex, "Normal ticker text", "Normal title", "Normal message");
+                _notificationHelper.BuildNotification(this, _notificationIndex, "Normal ticker text", "Normal title", "Normal message");
                 _notificationIndex++;
                 break;
             }
             case R.id.button_noti_bigpicture:
             {
-                _notificationUtil.BuildPicpictureNotification(this, _notificationIndex, "Bigpicture ticker text", "Bigpicture title", "Bigpicture message", "Bigpicture Expanded Title", "Bigpicture expanded message");
+                _notificationHelper.BuildPicpictureNotification(this, _notificationIndex, "Bigpicture ticker text", "Bigpicture title", "Bigpicture message", "Bigpicture Expanded Title", "Bigpicture expanded message");
                 _notificationIndex++;
                 break;
             }
             case R.id.button_noti_bigtext:
             {
-                _notificationUtil.BuildBigTextNotification(this, _notificationIndex, "Bigtext ticker text", "Bigtext title", "Bigtext message", "Bigtext Expanded Title",
+                _notificationHelper.BuildBigTextNotification(this, _notificationIndex, "Bigtext ticker text", "Bigtext title", "Bigtext message", "Bigtext Expanded Title",
                         "A long time ago, in a galaxy far,\n" +
                                 "far away....\n" +
                                 "\n" +
