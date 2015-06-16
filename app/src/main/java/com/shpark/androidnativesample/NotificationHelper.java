@@ -47,7 +47,7 @@ public class NotificationHelper {
     }
 
     private Notification.Builder CreateBuilder(Context context, int id,  String ticker, String title, String message) {
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, id, new Intent(context, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
 
         //Bitmap largeIcon = BitmapFactory.decodeResource(activity.getResources(), R.mipmap.ic_launcher);
         // 라이브러리나 플러그인 형태로 빌드될 때 R.java에 직접 접근할 수 없을 경우

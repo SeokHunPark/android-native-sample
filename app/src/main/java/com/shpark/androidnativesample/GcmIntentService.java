@@ -59,9 +59,12 @@ public class GcmIntentService extends IntentService {
                 // Post notification of received message.
                 //sendNotification(extras);
                 Log.i(TAG, "Received: " + extras.toString());
+                //String command = extras.getString("fttcmd");
+                long currentTime = System.currentTimeMillis();
+                int index = (int) (currentTime % 100);
 
                 NotificationHelper notificationUtil = new NotificationHelper();
-                notificationUtil.BuildNotification(this, 0, "GCM test push", "GCM test", "GCM test message");
+                notificationUtil.BuildNotification(this, index, "GCM test push " + String.valueOf(index), "GCM test", "GCM test message " + String.valueOf(index));
             }
         }
         // Release the wake lock provided by the WakefulBroadcastReceiver.
