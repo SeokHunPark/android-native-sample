@@ -1,15 +1,29 @@
-package com.shpark.androidnativesample;
+package com.shpark.androidnativesample.gcm;
 
 import android.app.IntentService;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.shpark.androidnativesample.NotificationHelper;
 
 /**
  * Created by sh on 2015-05-28.
+ *
+ <application>
+ ...
+ <receiver
+ android:name=".GcmBroadcastReceiver"
+ android:permission="com.google.android.c2dm.permission.SEND" >
+ <intent-filter>
+ <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+ <category android:name="com.shpark.androidnativesample" />
+ </intent-filter>
+ </receiver>
+ <service android:name=".GcmIntentService" />
+ ...
+ </application>
  */
 public class GcmIntentService extends IntentService {
 
@@ -61,7 +75,7 @@ public class GcmIntentService extends IntentService {
                 Log.i(TAG, "Received: " + extras.toString());
                 //String command = extras.getString("fttcmd");
                 long currentTime = System.currentTimeMillis();
-                int index = (int) (currentTime % 100);
+                int index = (int) (currentTime % 1000);
 
                 NotificationHelper notificationUtil = new NotificationHelper();
                 notificationUtil.BuildNotification(this, index, "GCM test push " + String.valueOf(index), "GCM test", "GCM test message " + String.valueOf(index));

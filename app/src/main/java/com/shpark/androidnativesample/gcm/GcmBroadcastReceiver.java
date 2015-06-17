@@ -1,4 +1,4 @@
-package com.shpark.androidnativesample;
+package com.shpark.androidnativesample.gcm;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -8,6 +8,20 @@ import android.support.v4.content.WakefulBroadcastReceiver;
 
 /**
  * Created by sh on 2015-05-28.
+ *
+ <application>
+ ...
+ <receiver
+ android:name=".GcmBroadcastReceiver"
+ android:permission="com.google.android.c2dm.permission.SEND" >
+ <intent-filter>
+ <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+ <category android:name="com.shpark.androidnativesample" />
+ </intent-filter>
+ </receiver>
+ <service android:name=".GcmIntentService" />
+ ...
+ </application>
  */
 public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
     @Override

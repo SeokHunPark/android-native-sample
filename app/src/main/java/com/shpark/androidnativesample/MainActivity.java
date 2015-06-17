@@ -32,9 +32,11 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
+import com.shpark.androidnativesample.gcm.RegistrationIntentService;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ConnectException;
 
 public class MainActivity extends Activity implements View.OnClickListener,
         GoogleApiClient.ConnectionCallbacks,
@@ -174,11 +176,14 @@ public class MainActivity extends Activity implements View.OnClickListener,
 
         // GCM
         // Check device for Play Services APK.
-        if (CheckPlayServices()) {
+        /*if (CheckPlayServices()) {
             // Start IntentService to register this application with GCM.
-            //Intent intent = new Intent(this, RegistrationIntentService.class);
-            //startService(intent);
-        }
+            Log.i(TAG, "Check device for Play Services API");
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+        } else {
+            Log.i(TAG, "No valid Google Play Services APK found.");
+        }*/
 
         if (CheckPlayServices()) {
             // If this check succeeds, proceed with normal processing.
@@ -277,21 +282,21 @@ public class MainActivity extends Activity implements View.OnClickListener,
             {
                 //_notificationUtil.BuildOldNotification(this, "Ticker text", "Title", "Message");
                 long currentTime = System.currentTimeMillis();
-                int notificationIndex = (int) (currentTime % 100);
+                int notificationIndex = (int) (currentTime % 1000);
                 _notificationHelper.BuildNotification(this, notificationIndex, "Normal ticker text", "Normal title", "Normal message");
                 break;
             }
             case R.id.button_noti_bigpicture:
             {
                 long currentTime = System.currentTimeMillis();
-                int notificationIndex = (int) (currentTime % 100);
+                int notificationIndex = (int) (currentTime % 1000);
                 _notificationHelper.BuildPicpictureNotification(this, notificationIndex, "Bigpicture ticker text", "Bigpicture title", "Bigpicture message", "Bigpicture Expanded Title", "Bigpicture expanded message");
                 break;
             }
             case R.id.button_noti_bigtext:
             {
                 long currentTime = System.currentTimeMillis();
-                int notificationIndex = (int) (currentTime % 100);
+                int notificationIndex = (int) (currentTime % 1000);
                 _notificationHelper.BuildBigTextNotification(this, notificationIndex, "Bigtext ticker text", "Bigtext title", "Bigtext message", "Bigtext Expanded Title",
                         "A long time ago, in a galaxy far,\n" +
                                 "far away....\n" +
@@ -479,10 +484,10 @@ public class MainActivity extends Activity implements View.OnClickListener,
                 String msg = "";
                 try {
                     _regid = InstanceID.getInstance(context).getToken(SENDER_ID, GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
-                    /*String token = instanceID.getToken(getString(R.string.gcm_senderId), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
-                    Log.i(TAG, "GCM Registration Token: " + token);*/
+                    //String token = instanceID.getToken(getString(R.string.gcm_senderId), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
+                    //Log.i(TAG, "GCM Registration Token: " + token);
 
-                    // Old version.
+                    // Old API.
                     /*if (_gcm == null) {
                         _gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
                     }
@@ -529,13 +534,30 @@ public class MainActivity extends Activity implements View.OnClickListener,
         editor.commit();
     }
 
+    private void RemoveRegistrationId(Context context) {
+        final SharedPreferences prefs = GetGCMPreferences(context);
+        int appVersion = GetAppVersion(context);
+        Log.i(TAG, "Delete regId on app version " + appVersion);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.remove(PROPERTY_REG_ID);
+        editor.remove(PROPERTY_APP_VERSION);
+        editor.commit();
+    }
+
     public void DeleteGcmTokeInBackground(final Context context) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
                 try {
                     InstanceID.getInstance(context).deleteToken(SENDER_ID, GoogleCloudMessaging.INSTANCE_ID_SCOPE);
+
+                    // Old API
+                    // AndroidManifest.xml¿¡ <uses-permission android:name="com.google.android.c2dm.permission.UNREGISTER" /> Ãß°¡
+                    //_gcm.unregister();
                     Log.d(TAG, "delete token succeeded." + "\nsenderId: " + SENDER_ID);
+
+                    // Remove stored regId.
+                    //RemoveRegistrationId(getApplicationContext());
                 } catch (final IOException e) {
                     Log.d(TAG, "remove token failed." + "\nsenderId: " + SENDER_ID + "\nerror: " + e.getMessage());
                 }
