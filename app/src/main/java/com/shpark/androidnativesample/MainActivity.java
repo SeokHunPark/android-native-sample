@@ -116,16 +116,16 @@ public class MainActivity extends Activity implements View.OnClickListener,
                 if(isChecked){
                     Log.d(TAG, "Is checked");
                     _isNotificationOn = true;
-                    if (checkPlayServices()) {
+                    if (CheckPlayServices()) {
                         Log.i(TAG, "Check device for Play Services API");
-                        getGcmTokenInBackground(getApplicationContext());
+                        GetGcmTokenInBackground(getApplicationContext());
                     } else {
                         Log.i(TAG, "No valid Google Play Services APK found.");
                     }
                 }else{
                     Log.d(TAG, "Is not checked");
                     _isNotificationOn = false;
-                    deleteGcmTokeInBackground(getApplicationContext());
+                    DeleteGcmTokeInBackground(getApplicationContext());
                 }
             }
         });
@@ -178,24 +178,24 @@ public class MainActivity extends Activity implements View.OnClickListener,
 
         // GCM
         // Check device for Play Services APK.
-        if (checkPlayServices()) {
+        if (CheckPlayServices()) {
             // Start IntentService to register this application with GCM.
             //Intent intent = new Intent(this, RegistrationIntentService.class);
             //startService(intent);
         }
 
-        if (checkPlayServices()) {
+        if (CheckPlayServices()) {
             // If this check succeeds, proceed with normal processing.
             // Otherwise, prompt user to get valid Play Services APK.
             Log.i(TAG, "Check device for Play Services API");
 
             // Old version.
             //_gcm = GoogleCloudMessaging.getInstance(this);
-            _regid = getStoredRegistrationId(getApplicationContext());
+            _regid = GetStoredRegistrationId(getApplicationContext());
 
             //if (regid.isEmpty()) {
             if (_regid.equals("")) {
-                getGcmTokenInBackground(getApplicationContext());
+                GetGcmTokenInBackground(getApplicationContext());
             } else {
                 Log.d(TAG, "Registered regid = " + _regid);
             }
@@ -210,7 +210,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
     @Override
     protected void onResume() {
         super.onResume();
-        checkPlayServices();
+        CheckPlayServices();
     }
 
     @Override
@@ -254,12 +254,12 @@ public class MainActivity extends Activity implements View.OnClickListener,
         switch (v.getId()) {
             case R.id.sign_in_button:
             {
-                signInWithGplus();
+                SignInWithGooglePlus();
                 break;
             }
             case R.id.button_signOut:
             {
-                signOutFromGplus();
+                SignOutFromGooglePlus();
                 break;
             }
             case R.id.button_yesDialog:
@@ -326,15 +326,15 @@ public class MainActivity extends Activity implements View.OnClickListener,
         // TODO: Start making API requests.
         _signInClicked = false;
         Toast.makeText(this, "User is connected!", Toast.LENGTH_LONG).show();
-        getProfileInformation();
-        updateUI(true);
+        GetProfileInformation();
+        UpdateUI(true);
     }
 
     @Override
     public void onConnectionSuspended(int i) {
         Log.d(TAG, "GoogleApiClient connection suspended");
         _googleApiClient.connect();
-        updateUI(false);
+        UpdateUI(false);
     }
 
     @Override
@@ -348,7 +348,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
             _connectionResult = result;
 
             if (_signInClicked) {
-                resolveSignInError();
+                ResolveSignInError();
             }
         }
     }
@@ -368,7 +368,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
         }
     }
 
-    private void updateUI(boolean isSignedIn) {
+    private void UpdateUI(boolean isSignedIn) {
         if (isSignedIn) {
             _signInButton.setVisibility(View.GONE);
             _signOutButton.setVisibility(View.VISIBLE);
@@ -380,23 +380,23 @@ public class MainActivity extends Activity implements View.OnClickListener,
         }
     }
 
-    private void signInWithGplus() {
+    private void SignInWithGooglePlus() {
         if (!_googleApiClient.isConnecting()) {
             _signInClicked = true;
-            resolveSignInError();
+            ResolveSignInError();
         }
     }
 
-    private void signOutFromGplus() {
+    private void SignOutFromGooglePlus() {
         if (_googleApiClient.isConnected()) {
             Plus.AccountApi.clearDefaultAccount(_googleApiClient);
             _googleApiClient.disconnect();
             _googleApiClient.connect();
-            updateUI(false);
+            UpdateUI(false);
         }
     }
 
-    private void resolveSignInError() {
+    private void ResolveSignInError() {
         if (_connectionResult.hasResolution()) {
             try {
                 _intentInProgress = true;
@@ -408,7 +408,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
         }
     }
 
-    private void getProfileInformation() {
+    private void GetProfileInformation() {
         try {
             if (Plus.PeopleApi.getCurrentPerson(_googleApiClient) != null) {
                 Person currentPerson = Plus.PeopleApi.getCurrentPerson(_googleApiClient);
@@ -434,9 +434,9 @@ public class MainActivity extends Activity implements View.OnClickListener,
     }
 
     // GCM
-    private String getStoredRegistrationId(Context context) {
+    private String GetStoredRegistrationId(Context context) {
 
-        final SharedPreferences prefs = getGCMPreferences(context);
+        final SharedPreferences prefs = GetGCMPreferences(context);
         String registrationId = prefs.getString(PROPERTY_REG_ID, "");
         //if (registrationId.isEmpty()) {
         if (registrationId.equals("")) {
@@ -447,7 +447,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
         // since the existing regID is not guaranteed to work with the new
         // app version.
         int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
-        int currentVersion = getAppVersion(context);
+        int currentVersion = GetAppVersion(context);
         if (registeredVersion != currentVersion) {
             Log.i(TAG, "App version changed.");
             return "";
@@ -455,13 +455,13 @@ public class MainActivity extends Activity implements View.OnClickListener,
         return registrationId;
     }
 
-    private SharedPreferences getGCMPreferences(Context context) {
+    private SharedPreferences GetGCMPreferences(Context context) {
         // This sample app persists the registration ID in shared preferences, but
         // how you store the regID in your app is up to you.
         return getSharedPreferences(MainActivity.class.getSimpleName(), Context.MODE_PRIVATE);
     }
 
-    private static int getAppVersion(Context context) {
+    private static int GetAppVersion(Context context) {
         try {
             PackageInfo packageInfo = context.getPackageManager()
                     .getPackageInfo(context.getPackageName(), 0);
@@ -472,7 +472,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
         }
     }
 
-    private void getGcmTokenInBackground(final Context context) {
+    private void GetGcmTokenInBackground(final Context context) {
         Log.d(TAG, "Register in background.");
         new AsyncTask<Object, Object, Object>() {
             @Override
@@ -496,14 +496,14 @@ public class MainActivity extends Activity implements View.OnClickListener,
                     // so it can use GCM/HTTP or CCS to send messages to your app.
                     // The request to your server should be authenticated if your app
                     // is using accounts.
-                    sendRegistrationIdToBackend();
+                    SendRegistrationIdToBackend();
 
                     // For this demo: we don't need to send it because the device
                     // will send upstream messages to a server that echo back the
                     // message using the 'from' address in the message.
 
                     // Persist the regID - no need to register again.
-                    storeRegistrationId(getApplicationContext(), _regid);
+                    StoreRegistrationId(getApplicationContext(), _regid);
                 } catch (IOException ex) {
                     msg = "Error :" + ex.getMessage();
                     // If there is an error, don't just keep trying to register.
@@ -515,14 +515,14 @@ public class MainActivity extends Activity implements View.OnClickListener,
         }.execute(null, null, null);
     }
 
-    private void sendRegistrationIdToBackend() {
+    private void SendRegistrationIdToBackend() {
         // Your implementation here.
 
     }
 
-    private void storeRegistrationId(Context context, String regId) {
-        final SharedPreferences prefs = getGCMPreferences(context);
-        int appVersion = getAppVersion(context);
+    private void StoreRegistrationId(Context context, String regId) {
+        final SharedPreferences prefs = GetGCMPreferences(context);
+        int appVersion = GetAppVersion(context);
         Log.i(TAG, "Saving regId on app version " + appVersion);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PROPERTY_REG_ID, regId);
@@ -530,7 +530,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
         editor.commit();
     }
 
-    public void deleteGcmTokeInBackground(final Context context) {
+    public void DeleteGcmTokeInBackground(final Context context) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -545,7 +545,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
         }.execute();
     }
 
-    private boolean checkPlayServices() {
+    private boolean CheckPlayServices() {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
