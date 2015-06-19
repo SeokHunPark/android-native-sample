@@ -52,8 +52,6 @@ public class MainActivity extends Activity implements View.OnClickListener,
     private GoogleCloudMessaging _gcm;
     private String _regid;
 
-    private boolean _isNotificationOn;
-
     private SignInButton _signInButton;
     private Button _signOutButton;
     private ImageView _imageProfilePic;
@@ -103,7 +101,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
         _noYesDialogButton.setOnClickListener(this);
 
         _systemBarHideButton = (Button)findViewById(R.id.button_systemBarHide);
-        _systemBarHideButton.setText("System Bar Hide");
+        _systemBarHideButton.setText("System Bar ìˆ¨ê¹€");
         _systemBarHideButton.setOnClickListener(this);
 
         _notificationOnOffSwitch = (Switch)findViewById(R.id.switch_noti_onoff);
@@ -115,7 +113,6 @@ public class MainActivity extends Activity implements View.OnClickListener,
 
                 if(isChecked){
                     Log.d(TAG, "Is checked");
-                    _isNotificationOn = true;
                     if (CheckPlayServices()) {
                         Log.i(TAG, "Check device for Play Services API");
                         GetGcmTokenInBackground(getApplicationContext());
@@ -124,7 +121,6 @@ public class MainActivity extends Activity implements View.OnClickListener,
                     }
                 }else{
                     Log.d(TAG, "Is not checked");
-                    _isNotificationOn = false;
                     DeleteGcmTokeInBackground(getApplicationContext());
                 }
             }
@@ -552,7 +548,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
                     InstanceID.getInstance(context).deleteToken(SENDER_ID, GoogleCloudMessaging.INSTANCE_ID_SCOPE);
 
                     // Old API
-                    // AndroidManifest.xml¿¡ <uses-permission android:name="com.google.android.c2dm.permission.UNREGISTER" /> Ãß°¡
+                    // AndroidManifest.xmlï¿½ï¿½ <uses-permission android:name="com.google.android.c2dm.permission.UNREGISTER" /> ï¿½ß°ï¿½
                     //_gcm.unregister();
                     Log.d(TAG, "delete token succeeded." + "\nsenderId: " + SENDER_ID);
 
