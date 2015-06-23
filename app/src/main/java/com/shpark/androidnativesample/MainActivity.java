@@ -302,6 +302,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
             }
             case R.id.button_consumeItem:
             {
+                // Not used.
                 break;
             }
             case R.id.button_yesDialog:

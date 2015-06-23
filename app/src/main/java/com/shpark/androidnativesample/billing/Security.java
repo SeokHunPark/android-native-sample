@@ -57,6 +57,7 @@ public class Security {
         if (TextUtils.isEmpty(signedData) || TextUtils.isEmpty(base64PublicKey) ||
                 TextUtils.isEmpty(signature)) {
             Log.e(TAG, "Purchase verification failed: missing data.");
+            // For test purchase in debug mode.
             if (BuildConfig.DEBUG) {
                 return true;
             }
