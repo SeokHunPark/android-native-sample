@@ -32,11 +32,13 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
-import com.shpark.androidnativesample.gcm.RegistrationIntentService;
+import com.shpark.androidnativesample.billing.IabHelper;
+import com.shpark.androidnativesample.billing.IabResult;
+import com.shpark.androidnativesample.billing.Inventory;
+import com.shpark.androidnativesample.billing.Purchase;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.ConnectException;
 
 public class MainActivity extends Activity implements View.OnClickListener,
         GoogleApiClient.ConnectionCallbacks,
@@ -57,6 +59,8 @@ public class MainActivity extends Activity implements View.OnClickListener,
     private ImageView _imageProfilePic;
     private TextView _textName, _textEmail;
     private LinearLayout _llProfileLayout;
+    private Button _buyItemButton;
+    private Button _consumeItemButton;
     private Button _yesDialogButton;
     private Button _noYesDialogButton;
     private Button _systemBarHideButton;
@@ -72,6 +76,10 @@ public class MainActivity extends Activity implements View.OnClickListener,
     private boolean _intentInProgress;
     private boolean _signInClicked;
     private ConnectionResult _connectionResult;
+
+    private IabHelper _iabHelper;
+    private String _base64EncodedPublicKey;
+    private static final String ITEM_SKU = "android.test.purchased";
 
     private NotificationHelper _notificationHelper;
 
@@ -91,6 +99,14 @@ public class MainActivity extends Activity implements View.OnClickListener,
         _textEmail = (TextView)findViewById(R.id.textView_email);
         _llProfileLayout = (LinearLayout)findViewById(R.id.layout_profile);
         _llProfileLayout.setVisibility(View.GONE);
+
+        _buyItemButton = (Button)findViewById(R.id.button_buyItem);
+        _buyItemButton.setText("Buy Test Item");
+        _buyItemButton.setOnClickListener(this);
+
+        _consumeItemButton = (Button)findViewById(R.id.button_consumeItem);
+        _consumeItemButton.setText("Consume Item");
+        _consumeItemButton.setOnClickListener(this);
 
         _yesDialogButton = (Button)findViewById(R.id.button_yesDialog);
         _yesDialogButton.setText("Yes Dialog");
@@ -163,6 +179,20 @@ public class MainActivity extends Activity implements View.OnClickListener,
                     .build();
         }
 
+        // In-app billing
+        _base64EncodedPublicKey = "";
+        _iabHelper = new IabHelper(this, _base64EncodedPublicKey);
+        _iabHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+            @Override
+            public void onIabSetupFinished(IabResult result) {
+                if (!result.isSuccess()) {
+                    Log.d(TAG, "In-app Billing setup failed: " + result);
+                } else {
+                    Log.d(TAG, "In-app Billing is set up OK");
+                }
+            }
+        });
+
         // Create shortcut.
         if (PreferenceHelper.GetPreferenceString(this, "isFirst") == PreferenceHelper.DEFAULT_VALUE) {
             Log.d(TAG, "First execute.");
@@ -225,6 +255,12 @@ public class MainActivity extends Activity implements View.OnClickListener,
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (_iabHelper != null) _iabHelper.dispose();
+        _iabHelper = null;
+    }
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -257,6 +293,15 @@ public class MainActivity extends Activity implements View.OnClickListener,
             case R.id.button_signOut:
             {
                 SignOutFromGooglePlus();
+                break;
+            }
+            case R.id.button_buyItem:
+            {
+                BuyItem();
+                break;
+            }
+            case R.id.button_consumeItem:
+            {
                 break;
             }
             case R.id.button_yesDialog:
@@ -366,6 +411,10 @@ public class MainActivity extends Activity implements View.OnClickListener,
                 _googleApiClient.connect();
             }
         }
+
+        if (!_iabHelper.handleActivityResult(requestCode, responseCode, intent)) {
+            super.onActivityResult(requestCode, responseCode, intent);
+        }
     }
 
     private void UpdateUI(boolean isSignedIn) {
@@ -432,6 +481,52 @@ public class MainActivity extends Activity implements View.OnClickListener,
             e.printStackTrace();
         }
     }
+
+    // In-app Billing
+    private void BuyItem() {
+        _iabHelper.launchPurchaseFlow(this, ITEM_SKU, 10001, purchaseFinishedListener);
+    }
+
+    IabHelper.OnIabPurchaseFinishedListener purchaseFinishedListener
+            = new IabHelper.OnIabPurchaseFinishedListener() {
+        @Override
+        public void onIabPurchaseFinished(IabResult result, Purchase info) {
+            if (result.isFailure()) {
+                return;
+            } else if (info.getSku().equals(ITEM_SKU)) {
+                ConsumeItem();
+                _buyItemButton.setEnabled(false);
+            }
+        }
+    };
+
+    private void ConsumeItem() {
+        _iabHelper.queryInventoryAsync(queryInventoryFinishedListener);
+    }
+
+    IabHelper.QueryInventoryFinishedListener queryInventoryFinishedListener
+            = new IabHelper.QueryInventoryFinishedListener() {
+        @Override
+        public void onQueryInventoryFinished(IabResult result, Inventory inv) {
+            if (result.isFailure()) {
+                // Handle failure
+            } else {
+                _iabHelper.consumeAsync(inv.getPurchase(ITEM_SKU), onConsumeFinishedListener);
+            }
+        }
+    };
+
+    IabHelper.OnConsumeFinishedListener onConsumeFinishedListener
+            = new IabHelper.OnConsumeFinishedListener() {
+        @Override
+        public void onConsumeFinished(Purchase purchase, IabResult result) {
+            if (result.isSuccess()) {
+                _buyItemButton.setEnabled(true);
+            } else {
+                // Handle error
+            }
+        }
+    };
 
     // GCM
     private String GetStoredRegistrationId(Context context) {
