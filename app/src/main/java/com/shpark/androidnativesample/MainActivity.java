@@ -485,7 +485,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
 
     // In-app Billing
     private void BuyItem() {
-        _iabHelper.launchPurchaseFlow(this, ITEM_SKU, 10001, purchaseFinishedListener);
+        _iabHelper.launchPurchaseFlow(this, ITEM_SKU, 10001, purchaseFinishedListener, "mypurchasetoken");
     }
 
     IabHelper.OnIabPurchaseFinishedListener purchaseFinishedListener
