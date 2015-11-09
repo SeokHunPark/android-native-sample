@@ -123,6 +123,11 @@
         android:layout_height="wrap_content"
         android:id="@+id/button_check_networkstate" />
 
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_check_aid" />
+
     </LinearLayout>
 
 </ScrollView>

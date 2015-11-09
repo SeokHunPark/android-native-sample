@@ -24,7 +24,10 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -71,6 +74,7 @@ public class MainActivity extends Activity implements View.OnClickListener,
     private Button _addShortCutButton;
     private Button _checkRootingButton;
     private Button _checkNetworkStateButton;
+    private Button _checkAIDButton;
 
     private GoogleApiClient _googleApiClient;
     private boolean _intentInProgress;
@@ -165,6 +169,10 @@ public class MainActivity extends Activity implements View.OnClickListener,
         _checkNetworkStateButton = (Button)findViewById(R.id.button_check_networkstate);
         _checkNetworkStateButton.setText("Check Network State");
         _checkNetworkStateButton.setOnClickListener(this);
+
+        _checkAIDButton = (Button)findViewById(R.id.button_check_aid);
+        _checkAIDButton.setText("Check Advertising ID");
+        _checkAIDButton.setOnClickListener(this);
 
         _notificationHelper = new NotificationHelper();
 
@@ -358,10 +366,17 @@ public class MainActivity extends Activity implements View.OnClickListener,
             case R.id.button_check_rooting:
             {
                 HackDetectUtil.CheckRooting(this);
+                break;
             }
             case R.id.button_check_networkstate:
             {
                 NetworkStateUtil.CheckNetworkState(this);
+                break;
+            }
+            case R.id.button_check_aid:
+            {
+                GetAdvertisingID(this);
+                //Toast.makeText(this, "Ad ID : " + adId, Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -698,5 +713,29 @@ public class MainActivity extends Activity implements View.OnClickListener,
         protected void onPostExecute(Bitmap result) {
             bitmapImage.setImageBitmap(result);
         }
+    }
+
+    // Get advertising id.
+    public void GetAdvertisingID(final Context context) {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                AdvertisingIdClient.Info adInfo = null;
+
+                try {
+                    adInfo = AdvertisingIdClient.getAdvertisingIdInfo(context);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    e.printStackTrace();
+                } catch (GooglePlayServicesRepairableException e) {
+                    e.printStackTrace();
+                }
+
+                String adId = adInfo.getId();
+                Log.d(TAG, "Advertising ID : " + adId);
+                return null;
+            }
+        }.execute();
     }
 }
